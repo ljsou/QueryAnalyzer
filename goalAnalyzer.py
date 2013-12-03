@@ -130,9 +130,18 @@ def updateClassifier(query, classifier, label):
     new_data = [(post, label)]
     classifier.update(new_data)
 
-    
-    
-        
+#The following commands allow to observe the operation of this script.
+"""    
+>>> import goalAnalyzer as ga
+>>> train, test = ga.init()
+>>> train = ga.posTaggingCollection(train)
+>>> test = ga.posTaggingCollection(test)
+>>> cl = ga.accuracy(train, test)
+>>> query = 'where to find info on aquarium in atlanta ga' #Example
+>>> label = ga.test(query, cl)
+>>> updateClassifier(query, cl, label)
+>>> cl.accuracy(test)    
+""" 
 
 
     
