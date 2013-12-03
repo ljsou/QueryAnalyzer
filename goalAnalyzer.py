@@ -2,12 +2,17 @@
 """
 Created on Sun Dec  1 20:13:56 2013
 
-@author: javier
+@author: Javier Suarez
+
+This script analyzes a user query through different levels of abstraction, 
+ranging from natural language processing to identify the user's intentions 
+and goals
 """
 
 from textblob.classifiers import NaiveBayesClassifier
 from textblob import TextBlob
 
+#This function initializes the data sets of training and testing
 def init():
     train = [
          ('how to warm up your fish tank water.', 'pos'),
@@ -73,19 +78,17 @@ def init():
          ('google','neg')     
     ]
     return train, test
-    
+
+#This function evaluates the accuracy of the implemented classifier 
+#Return the trained classifier 
 def accuracy(train, test):
     cl = NaiveBayesClassifier(train)
-    #print cl.classify("learn Python language")
-    #prob_dist = cl.prob_classify("university of cauca")
-    #print prob_dist.max()
-    #print "Pos:", prob_dist.prob("pos")
-    #print "Neg:", prob_dist.prob("neg")
     print "Accuracy: ", cl.accuracy(test)
     cl.show_informative_features(20)
     print
     return cl
 
+#This function performs a Part-of-speech taggin out from a collection of documents.
 def posTaggingCollection(train_file):
     postags_train = []
     for trf in train_file:        
@@ -103,13 +106,15 @@ def posTaggingCollection(train_file):
     #print postags_train
     return postags_train
 
+#This function performs a Part-of-speech taggin per sentence (document).
 def posTaggingDocument(sentence):
     t = TextBlob(sentence)
     p = ''
     for pt in t.tags:
         p+= str(pt[1]) + " "
     return p
-
+    
+#This function classifieds the user query as appropriate: "Pos" or "Neg".
 def test(query, classifier):
     p = posTaggingDocument(query)
     classifier.classify(p)
@@ -119,6 +124,7 @@ def test(query, classifier):
     print "Neg:", prob_dist.prob("neg")
     return prob_dist.max()
 
+#This feature allows updating the classifier based on new vocabulary (queries not seen in the training phase).
 def updateClassifier(query, classifier, label):
     post = posTaggingDocument(query)
     new_data = [(post, label)]
