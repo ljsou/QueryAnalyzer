@@ -49,5 +49,13 @@ def posTagging(train, file_name):
     print "POS Taggin done on", time.clock() - t0, "seconds."
 
 
+def renderTrainData(path, positives, negatives):
+    pos = []
+    neg = []
+    
+    pos = addSomeLabel(path, positives, 'pos')
+    neg = addSomeLabel(path, negatives, 'neg')
+    
+    return pos + neg
     
     

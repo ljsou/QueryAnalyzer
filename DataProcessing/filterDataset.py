@@ -59,3 +59,32 @@ def filterDatasetByVerb(file_name, new_file):
     print "Filter by verbs done on", time.clock() - t0, "seconds."
             
         
+def randomSample(file_name, new_file):
+    t0 = time.clock()
+    size = len(open(file_name).readlines())
+    collection = []
+    
+    for line in open(file_name):
+        collection.append(line.strip(' \t\r\n'))
+    
+    document = open(new_file, 'a')
+    for i in range(0, size, 100):        
+        print collection[i]
+        document.write(collection[i] + "\n")
+    document.close 
+    print "Random sample from", file_name, "done on", time.clock() - t0, "seconds."
+    
+        
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
