@@ -7,7 +7,7 @@ Created on Mon Dec  2 18:10:12 2013
 from textblob import TextBlob
 import time
 
-path = "/home/javier/Desarrollo/PythonProject/"
+path = "/home/javier/Desarrollo/PythonProject/Data/"
 goals = "aolGoals.txt"
 
 def writeLineOn(file_name, line):
@@ -15,18 +15,19 @@ def writeLineOn(file_name, line):
     document.write(line + "\n")
     document.close
 
-def addPositiveLabel():
+def addSomeLabel(path, file_name, label):
+    t0 = time.clock()
     train = []
-    print "Add Positive label to query, please wait..."
-    for line in open(path + goals):
+    print "Add '", label,"' label to", file_name, "please wait..."
+    for line in open(path + file_name):
         query = line.strip(' \t\r\n')
-        tag = "pos"
+        tag = label
         data = []
         data.append(query)
         data.append(tag)
         train.append(tuple(data))
-        print train[:10]
-    print "finished"
+    #print train[:10]
+    print "Labeled done on", time.clock() - t0, "seconds."
     return train
 
 
@@ -45,7 +46,7 @@ def posTagging(train, file_name):
         #print p
         document.write(p + "\n")
     document.close    
-    print "Finished on", time.clock() - t0, "seconds."
+    print "POS Taggin done on", time.clock() - t0, "seconds."
 
 
     
