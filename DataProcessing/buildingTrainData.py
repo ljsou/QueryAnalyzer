@@ -7,8 +7,8 @@ Created on Mon Dec  2 18:10:12 2013
 from textblob import TextBlob
 import time
 
-path = "/home/javier/Desarrollo/PythonProject/Data/"
-goals = "aolGoals.txt"
+#path = "/home/javier/Desarrollo/PythonProject/Data/"
+#goals = "aolGoals.txt"
 
 def writeLineOn(file_name, line):
     document = open(file_name, 'a')    
