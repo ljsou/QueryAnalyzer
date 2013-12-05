@@ -12,17 +12,44 @@ and goals
 from textblob.classifiers import NaiveBayesClassifier
 from textblob import TextBlob
 
+import time
+import buildingTrainData as bltd
+
 #This function initializes the data sets of training and testing
 def init():
-     
+
+    test = [
+         ("how to cut hair", 'pos'),
+         ('w2express.com','neg'),
+         ('how to play cornhole', 'pos'),
+         ('safety ideas','neg'),
+         ("check your claim status", 'pos'),
+         ('buying rental cars','pos'),
+         ('canon','neg'),
+         ('changing your password','pos'),
+         ('park central hotel convention center','neg'),         
+         ('google','neg')
+    ] 
+    path = '/media/University/University Disc/2-Master/Master Thesis/Ejecución Tesis/Desarrollo/PythonProjects/Data/'
+    positives = 'positiveSample.txt'
+    negatives = 'negativeSample.txt'
     
-    return train, test
+    train = bltd.renderTrainData(path, positives, negatives)
+    
+    cl = accuracy(train, test)
+    return cl
+    
+    
 
 #This function evaluates the accuracy of the implemented classifier 
 #Return the trained classifier 
 def accuracy(train, test):
+    t0 = time.clock()
+    print "Start trining of NaiveBayesClassifier, this may take several minutes, please wait..."
     cl = NaiveBayesClassifier(train)
-    print "Accuracy: ", cl.accuracy(test)
+    print  "\tTrainig done on", time.clock() - t0, "seconds."
+    print 
+    print "\tAccuracy: ", cl.accuracy(test)
     cl.show_informative_features(20)
     print
     return cl
