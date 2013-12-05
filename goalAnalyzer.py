@@ -17,19 +17,33 @@ import buildingTrainData as bltd
 
 #This function initializes the data sets of training and testing
 def init():
+    
+    """
+test = [
+     ("how to cut hair", 'pos'),
+     ('w2express.com','neg'),
+     ('how to play cornhole', 'pos'),
+     ('safety ideas','neg'),
+     ("check your claim status", 'pos'),
+     ('buying rental cars','pos'),
+     ('canon','neg'),
+     ('changing your password','pos'),
+     ('park central hotel convention center','neg'),         
+     ('google','neg')
+] """
 
     test = [
-         ("how to cut hair", 'pos'),
-         ('w2express.com','neg'),
-         ('how to play cornhole', 'pos'),
-         ('safety ideas','neg'),
-         ("check your claim status", 'pos'),
-         ('buying rental cars','pos'),
-         ('canon','neg'),
-         ('changing your password','pos'),
-         ('park central hotel convention center','neg'),         
-         ('google','neg')
-    ] 
+        ('WRB TO VB NN ', 'pos'), 
+        ('CD ', 'neg'), 
+        ('WRB TO VB NN ', 'pos'), 
+        ('JJ NNS ', 'neg'), 
+        ('VB PRP$ NN NN ', 'pos'), 
+        ('VBG JJ NNS ', 'pos'), 
+        ('NN ', 'neg'), 
+        ('VBG PRP$ NN ', 'pos'), 
+        ('NN JJ NN NN NN ', 'neg'), 
+        ('NNP-ORG ', 'neg')
+    ]
     path = '/media/University/University Disc/2-Master/Master Thesis/Ejecución Tesis/Desarrollo/PythonProjects/Data/'
     positives = 'positiveSample.txt'
     negatives = 'negativeSample.txt'
