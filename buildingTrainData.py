@@ -2,7 +2,7 @@
 """
 Created on Mon Dec  2 18:10:12 2013
 
-@author: javier
+@author: Javier Suarez
 """
 from textblob import TextBlob
 import time
@@ -10,11 +10,7 @@ import time
 #path = "/home/javier/Desarrollo/PythonProject/Data/"
 #goals = "aolGoals.txt"
 
-def writeLineOn(file_name, line):
-    document = open(file_name, 'a')    
-    document.write(line + "\n")
-    document.close
-
+#Allows to add tag in order to labeling a training set
 def addSomeLabel(path, file_name, label):
     t0 = time.clock()
     train = []
