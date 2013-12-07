@@ -10,8 +10,12 @@ import time
 #path = "/home/javier/Desarrollo/PythonProject/Data/"
 #goals = "aolGoals.txt"
 
-#Allows to add tag in order to labeling a training set
+
 def addSomeLabel(path, file_name, label):
+    """
+    This function allows to add tag in order to labeling a training set
+    Return tagged data set for training process
+    """
     t0 = time.clock()
     train = []
     print "Add '", label,"' label to", file_name, "please wait..."
@@ -28,6 +32,11 @@ def addSomeLabel(path, file_name, label):
 
 
 def posTagging(train, file_name):
+    """
+    This function performs a POS tag process 
+    @train: training file 
+    @file_name: document name in which the pos tags are recorded
+    """
     t0 = time.clock()
     print "Performing POS Tagging, please wait..."
     document = open(file_name, 'a')   
@@ -46,6 +55,9 @@ def posTagging(train, file_name):
 
 
 def renderTrainData(path, positives, negatives):
+    """
+    render train data (Positives + Negavites)
+    """
     pos = []
     neg = []
     

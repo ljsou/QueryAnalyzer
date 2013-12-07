@@ -15,24 +15,28 @@ from textblob import TextBlob
 import time
 import buildingTrainData as bltd
 
-#This function initializes the data sets of training and testing
-def init():
-    
-    """
-test = [
-     ("how to cut hair", 'pos'),
-     ('w2express.com','neg'),
-     ('how to play cornhole', 'pos'),
-     ('safety ideas','neg'),
-     ("check your claim status", 'pos'),
-     ('buying rental cars','pos'),
-     ('canon','neg'),
-     ('changing your password','pos'),
-     ('park central hotel convention center','neg'),         
-     ('google','neg')
-] """
+import pickle
 
+
+def init(): 
+    """
+    This function initializes the data sets of training and testing
+    
     test = [
+         ("how to cut hair", 'pos'),
+         ('w2express.com','neg'),
+         ('how to play cornhole', 'pos'),
+         ('safety ideas','neg'),
+         ("check your claim status", 'pos'),
+         ('buying rental cars','pos'),
+         ('canon','neg'),
+         ('changing your password','pos'),
+         ('park central hotel convention center','neg'),         
+         ('google','neg')
+    ]
+    """
+    test = [
+        
         ('WRB TO VB NN ', 'pos'), 
         ('CD ', 'neg'), 
         ('WRB TO VB NN ', 'pos'), 
@@ -44,7 +48,7 @@ test = [
         ('NN JJ NN NN NN ', 'neg'), 
         ('NNP-ORG ', 'neg')
     ]
-    path = '/media/University/University Disc/2-Master/Master Thesis/Ejecución Tesis/Desarrollo/PythonProjects/Data/'
+    path = '/media/University/UniversityDisc/2-Master/MasterThesis/EjecuciónTesis/Desarrollo/PythonProjects/Data/'
     positives = 'positiveSample.txt'
     negatives = 'negativeSample.txt'
     
@@ -54,10 +58,11 @@ test = [
     return cl
     
     
-
-#This function evaluates the accuracy of the implemented classifier 
-#Return the trained classifier 
 def accuracy(train, test):
+    """
+    This function evaluates the accuracy of the implemented classifier 
+    Return the trained classifier 
+    """
     t0 = time.clock()
     print "Start trining of NaiveBayesClassifier, this may take several minutes, please wait..."
     cl = NaiveBayesClassifier(train)
@@ -68,8 +73,11 @@ def accuracy(train, test):
     print
     return cl
 
-#This function performs a Part-of-speech taggin out from a collection of documents.
+
 def posTaggingCollection(train_file):
+    """    
+    This function performs a Part-of-speech taggin out from a collection of documents.
+    """
     postags_train = []
     for trf in train_file:        
         #print trf[0]
@@ -86,16 +94,22 @@ def posTaggingCollection(train_file):
     #print postags_train
     return postags_train
 
-#This function performs a Part-of-speech taggin per sentence (document).
+
 def posTaggingDocument(sentence):
+    """
+    This function performs a Part-of-speech taggin per sentence (document).
+    """
     t = TextBlob(sentence)
     p = ''
     for pt in t.tags:
         p+= str(pt[1]) + " "
     return p
     
-#This function classifieds the user query as appropriate: "Pos" or "Neg".
+
 def test(query, classifier):
+    """
+    This function classifies the user query as appropriate: "Pos" or "Neg".
+    """
     p = posTaggingDocument(query)
     classifier.classify(p)
     prob_dist = classifier.prob_classify(p)
@@ -104,11 +118,31 @@ def test(query, classifier):
     print "Neg:", prob_dist.prob("neg")
     return prob_dist.max()
 
-#This feature allows updating the classifier based on new vocabulary (queries not seen in the training phase).
+
 def updateClassifier(query, classifier, label):
+    """
+    This feature allows updating the classifier based on new vocabulary (queries not seen in the training phase).
+    """
     post = posTaggingDocument(query)
     new_data = [(post, label)]
     classifier.update(new_data)
+    
+    
+def saveTrainedClassifier(path, classifier, classifier_name):
+    f = open(classifier_name, 'wb')
+    pickle.dump(classifier, f)
+    f.close()
+    
+
+def loadTrainedClassifier(classifier_name):
+    """
+    This function allows to load a trained classifier
+    Return: loaded classifier
+    """
+    f = open(classifier_name)
+    loaded_cl = pickle.load(f)
+    f.close()
+    return loaded_cl
 
 #The following commands allow to observe the operation of this script.
 """    
@@ -121,6 +155,17 @@ def updateClassifier(query, classifier, label):
 >>> label = ga.test(query, cl)
 >>> updateClassifier(query, cl, label)
 >>> cl.accuracy(test)    
+>>> 
+>>>
+>>> import pickle
+>>> f = open('my_classifier.pickle', 'wb')
+>>> pickle.dump(cl, f)
+>>> f.close()
+>>> 
+>>>
+>>> f = open('my_classifier.pickle')
+>>> classifier = pickle.load(f)
+>>> f.close()
 """ 
 
 

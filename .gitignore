@@ -1,2 +1,5 @@
 *.pyc
 *.pyo
+*.pickle
+.fuse_hidden0000023c00000001
+

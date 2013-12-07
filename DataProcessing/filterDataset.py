@@ -20,10 +20,13 @@ WRB    Wh-adverb
 
 import time
 
-#This function allows to remove repeated lines from a dataset. 
-#file_name: dataset name to be filtered.
-#new_file: resulting dataset.
+
 def filterDataset(file_name, new_file):
+    """
+    This function allows to remove repeated lines from a dataset. 
+    @file_name: dataset name to be filtered.
+    @new_file: resulting dataset.
+    """
     size = len(open(file_name).readlines())
     print size
     document = open(new_file, 'a')      
@@ -38,12 +41,14 @@ def filterDataset(file_name, new_file):
     document.close     
    
 
-#This function allows to remove queries with POS tags like VB, VBD, VBG, VBN, VBP and VBZ or WRB
-#requires just adding a representative letter as: V or W.
-#file_name: dataset name to be filtered.
-#new_file: resulting dataset.
-#tag: a representative letter as: V or W.
 def filterDatasetByVerb(file_name, new_file, tag):
+    """
+    This function allows to remove queries with POS tags like VB, VBD, VBG, VBN, VBP and VBZ or WRB
+    requires just adding a representative letter as: V or W.
+    @file_name: dataset name to be filtered.
+    @new_file: resulting dataset.
+    @tag: a representative letter as: V or W.
+    """
     t0 = time.clock()
     size = len(open(file_name).readlines())
     print size
@@ -61,11 +66,13 @@ def filterDatasetByVerb(file_name, new_file, tag):
     print "Filter by verbs done on", time.clock() - t0, "seconds."
             
 
-#This function allow to take a random sample of a given dataset.
-#file_name: dataset name to be filtered.
-#new_file: resulting dataset.
-#sample: is the number with which the cycle should be increased at each iteration
 def randomSample(file_name, new_file, sample):
+    """
+    This function allow to take a random sample of a given dataset.
+    @file_name: dataset name to be filtered.
+    @new_file: resulting dataset.
+    @sample: is the number with which the cycle should be increased at each iteration
+    """
     t0 = time.clock()
     size = len(open(file_name).readlines())
     collection = []
@@ -79,8 +86,7 @@ def randomSample(file_name, new_file, sample):
         document.write(collection[i] + "\n")
     document.close 
     print "Random sample from", file_name, "done on", time.clock() - t0, "seconds."
-    
-        ()
+        
         
     
     
