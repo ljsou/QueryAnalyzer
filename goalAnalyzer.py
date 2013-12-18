@@ -113,10 +113,10 @@ def test(query, classifier):
     p = posTaggingDocument(query)
     classifier.classify(p)
     prob_dist = classifier.prob_classify(p)
-    print "Max Probability Distribution:", prob_dist.max()
-    print "Pos:", prob_dist.prob("pos")
-    print "Neg:", prob_dist.prob("neg")
-    return prob_dist.max()
+    #print "Max Probability Distribution:", prob_dist.max()
+    #print "Pos:", prob_dist.prob("pos")
+    #print "Neg:", prob_dist.prob("neg")
+    return prob_dist.max(), prob_dist.prob("pos"), prob_dist.prob("neg")
 
 
 def updateClassifier(query, classifier, label):
@@ -136,7 +136,7 @@ def saveTrainedClassifier(path, classifier, classifier_name):
 
 def loadTrainedClassifier(classifier_name):
     """
-    This function allows to load a trained classifier
+    This function allows to load a trained classifier.
     Return: loaded classifier
     """
     f = open(classifier_name)
