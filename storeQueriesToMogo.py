@@ -144,8 +144,8 @@ def addNGramFieldIntoCollection():
 
 def test():
     db = dbClient()
-    ngram_test = db.ngram_test
-    cursor = ngram_test.find()
+    aol_goals = db.aol_goals
+    cursor = aol_goals.find()
     for q in cursor:
         tgram = q["triGram"]   
         print tgram

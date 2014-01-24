@@ -5,6 +5,7 @@ Created on Mon Dec  2 18:10:12 2013
 @author: Javier Suarez
 """
 from textblob import TextBlob
+from textblob.taggers import NLTKTagger
 import time
 
 #path = "/home/javier/Desarrollo/PythonProject/Data/"
@@ -13,7 +14,7 @@ import time
 
 def addSomeLabel(path, file_name, label):
     """
-    This function allows to add tag in order to labeling a training set
+    This function allows to add a tag in order to labeling a training set.
     Return tagged data set for training process
     """
     t0 = time.clock()
@@ -31,6 +32,8 @@ def addSomeLabel(path, file_name, label):
     return train
 
 def posTagging(phrase):
+    #nltk_tagger = NLTKTagger()
+    #t = TextBlob(phrase, pos_tagger=nltk_tagger)
     t = TextBlob(phrase)
     postg = t.tags 
     p = []

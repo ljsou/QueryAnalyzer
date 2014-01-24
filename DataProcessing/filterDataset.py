@@ -19,6 +19,20 @@ WRB    Wh-adverb
 """
 
 import time
+from pymongo import MongoClient
+import time
+
+
+def dbClient():
+    """
+    This function makes a Connection with MongoClient, i.e., 
+    creates a MongoClient to the running mongod instance. 
+    """
+    #Making a Connection with MongoClient
+    client = MongoClient('localhost', 27017)
+    #Getting a Database
+    db = client['aolSearchDB']
+    return db
 
 
 def filterDataset(file_name, new_file):
@@ -86,6 +100,39 @@ def randomSample(file_name, new_file, sample):
         document.write(collection[i] + "\n")
     document.close 
     print "Random sample from", file_name, "done on", time.clock() - t0, "seconds."
+
+
+def randomSampleFromMongo():
+    """
+    This function allow to take a random sample of a given dataset in MongoDB.  
+    In turn, the sample obtained (positive_training_sample) from the original dataset is stored in MongoDB.    
+    """
+    t0 = time.clock()
+    db = dbClient()
+    i = 0
+    #test_sample is just a proof. It will be change for a whole dataset
+    aol_goals = db.aol_goals
+    cursor = aol_goals.find({"pos" : {"$in":["VB","VBZ", "VBG", "WRB"]}})
+    print cursor.count()
+    #collection = []
+    for g in cursor:        
+        query = g["query"]   
+        pos = g["pos"]   
+        triGram = g["triGram"]           
+        goal = {"query": query,
+                 "post" : pos, 
+                 "triGram" : triGram, 
+                 "label" : "pos"
+        }
+        i += 1
+        if(i == 930):
+            print i
+            #Inserting Documents (AOl_Goals)
+            positive_training_sample = db.positive_training_sample
+            positive_training_sample.insert(goal)
+            i = 0
+     
+    print "Random sample done on", time.clock() - t0, "seconds."
         
         
     
