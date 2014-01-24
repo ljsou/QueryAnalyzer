@@ -105,7 +105,11 @@ def randomSample(file_name, new_file, sample):
 def randomSampleFromMongo():
     """
     This function allow to take a random sample of a given dataset in MongoDB.  
-    In turn, the sample obtained (positive_training_sample) from the original dataset is stored in MongoDB.    
+    In turn, the sample obtained from the original dataset is stored in MongoDB. 
+    - For the positive_training_sample collection is necessary to use 
+      the $in operator over aol_goals collection.
+    - For the negative_training_sample collection is necessary to use 
+      the $nin operator over aol_quidder collection.
     """
     t0 = time.clock()
     db = dbClient()
