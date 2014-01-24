@@ -30,8 +30,15 @@ def addSomeLabel(path, file_name, label):
     print "Labeled done on", time.clock() - t0, "seconds."
     return train
 
+def posTagging(phrase):
+    t = TextBlob(phrase)
+    postg = t.tags 
+    p = []
+    for pt in postg:
+        p.append(str(pt[1]).strip(' \t\r\n'))
+    return p
 
-def posTagging(train, file_name):
+def posTaggingFromDocument(train, file_name):
     """
     This function performs a POS tag process 
     @train: training file 
@@ -53,6 +60,10 @@ def posTagging(train, file_name):
     document.close    
     print "POS Taggin done on", time.clock() - t0, "seconds."
 
+def nGram(n, phrase):
+    t = TextBlob(phrase)
+    return t.ngrams(n=n)
+    
 
 def renderTrainData(path, positives, negatives):
     """
