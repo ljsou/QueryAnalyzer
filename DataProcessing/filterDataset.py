@@ -115,8 +115,10 @@ def randomSampleFromMongo():
     db = dbClient()
     i = 0
     #test_sample is just a proof. It will be change for a whole dataset
-    aol_goals = db.aol_goals
-    cursor = aol_goals.find({"pos" : {"$in":["VB","VBZ", "VBG", "WRB"]}})
+    #aol_goals = db.aol_goals
+    aol_quidder = db.aol_quidder
+    #cursor = aol_goals.find({"pos" : {"$in":["VB","VBZ", "VBG", "WRB"]}})
+    cursor = aol_quidder.find({"pos" : {"$nin":["VB","VBZ", "VBG", "WRB"]}})
     print cursor.count()
     #collection = []
     for g in cursor:        
@@ -126,14 +128,16 @@ def randomSampleFromMongo():
         goal = {"query": query,
                  "post" : pos, 
                  "triGram" : triGram, 
-                 "label" : "pos"
+                 "label" : "neg"
         }
         i += 1
-        if(i == 930):
+        if(i == 27890):
             print i
             #Inserting Documents (AOl_Goals)
-            positive_training_sample = db.positive_training_sample
-            positive_training_sample.insert(goal)
+            #positive_training_sample = db.positive_training_sample
+            #positive_training_sample.insert(goal)
+            negative_training_sample = db.negative_training_sample
+            negative_training_sample.insert(goal)
             i = 0
      
     print "Random sample done on", time.clock() - t0, "seconds."
