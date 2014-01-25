@@ -7,10 +7,52 @@ Created on Mon Dec  2 18:10:12 2013
 from textblob import TextBlob
 from textblob.taggers import NLTKTagger
 import time
+from pymongo import MongoClient
+import json 
 
-#path = "/home/javier/Desarrollo/PythonProject/Data/"
-#goals = "aolGoals.txt"
 
+def dbClient():
+    """
+    This function makes a Connection with MongoClient, i.e., 
+    creates a MongoClient to the running mongod instance. 
+    """
+    #Making a Connection with MongoClient
+    client = MongoClient('localhost', 27017)
+    #Getting a Database
+    db = client['aolSearchDB']
+    return db
+    
+def createTrainingData():
+    db = dbClient()    
+    negative_training_sample = db.negative_training_sample
+    cursor = negative_training_sample.find()
+    for td in cursor:
+        tgram = td["triGram"]
+        label = td["label"]
+        #train.append((tgram, label))
+        training = {"text" : tgram, 
+                 "label" : label                
+                 }
+        #Inserting Documents (AOl_Queries)
+        training_data = db.train_data
+        training_data.insert(training, safe = True)
+    
+def trainingData():
+    data = ""
+    db = dbClient()          
+    training_data = db.training_data
+    cursor = training_data.find({}, { "_id": 0, "label": 1 , "text": 1 }).limit(10)
+    for td in cursor:
+        data = data + json.dumps(td, sort_keys=True, indent=4, separators=(',', ': ')) + ", \n"
+        
+    data = "[" + data + "]"
+    print data
+    
+    document = open("training.json", 'a')   
+    document.write(data)
+    document.close  
+        
+        
 
 def addSomeLabel(path, file_name, label):
     """
@@ -30,6 +72,7 @@ def addSomeLabel(path, file_name, label):
     #print train[:10]
     print "Labeled done on", time.clock() - t0, "seconds."
     return train
+    
 
 def posTagging(phrase):
     #nltk_tagger = NLTKTagger()
@@ -40,6 +83,7 @@ def posTagging(phrase):
     for pt in postg:
         p.append(str(pt[1]).strip(' \t\r\n'))
     return p
+    
 
 def posTaggingFromDocument(train, file_name):
     """
@@ -62,6 +106,7 @@ def posTaggingFromDocument(train, file_name):
         document.write(p + "\n")
     document.close    
     print "POS Taggin done on", time.clock() - t0, "seconds."
+    
 
 def nGram(n, phrase):
     t = TextBlob(phrase)
@@ -79,5 +124,8 @@ def renderTrainData(path, positives, negatives):
     neg = addSomeLabel(path, negatives, 'neg')
     
     return pos + neg
+        
+    
+    
     
     

@@ -20,7 +20,6 @@ WRB    Wh-adverb
 
 import time
 from pymongo import MongoClient
-import time
 
 
 def dbClient():
