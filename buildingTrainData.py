@@ -5,10 +5,13 @@ Created on Mon Dec  2 18:10:12 2013
 @author: Javier Suarez
 """
 from textblob import TextBlob
-from textblob.taggers import NLTKTagger
-import time
+#from textblob.taggers import NLTKTagger
+from textblob.classifiers import NaiveBayesClassifier
 from pymongo import MongoClient
+import pickle
 import json 
+import time
+
 
 
 def dbClient():
@@ -22,26 +25,67 @@ def dbClient():
     db = client['aolSearchDB']
     return db
     
+    
 def createTrainingData():
     db = dbClient()    
-    negative_training_sample = db.negative_training_sample
-    cursor = negative_training_sample.find()
+    positive_training_sample = db.positive_training_sample
+    cursor = positive_training_sample.find()
+    data = []
+    t = ""
     for td in cursor:
         tgram = td["triGram"]
-        label = td["label"]
+        label = td["label"] 
+        #print tgram
+        for tg in tgram:
+            d = '-'.join(tg)
+            t = t + " " + d
+        print t
+        data.append((t, label))
+        t = ""
+        
+    negative_training_sample = db.negative_training_sample
+    cursor = negative_training_sample.find().limit(50)
+    t = ""
+    for td in cursor:
+        tgram = td["triGram"]
+        label = td["label"] 
+        #print tgram
+        for tg in tgram:
+            d = '-'.join(tg)
+            t = t + " " + d
+        print t
+        data.append((t, label))
+        t = ""
+    
+    #print data
+    print len(data)
+    
+    cl = NaiveBayesClassifier(data)
+    cl.show_informative_features(20)    
+    test = cl.classify("buying groceries online")
+    print test
+    test2 = cl.classify("how to get revenge on neighbor within limit of law")
+    print test2
+    path = "/media/University/UniversityDisc/2-Master/MasterThesis/EjecucionTesis/Desarrollo/PythonProjects/QueryAnalyzer"
+    saveTrainedClassifier(path, cl, "my_classifier_v2.pickle")
+
+        
         #train.append((tgram, label))
-        training = {"text" : tgram, 
-                 "label" : label                
-                 }
+        #training = {"text" : tgram, 
+        #         "label" : label                
+        #         }
         #Inserting Documents (AOl_Queries)
-        training_data = db.train_data
-        training_data.insert(training, safe = True)
+        #training_data = db.train_data
+        #training_data.insert(training, safe = True)
     
 def trainingData():
+    """
+    This function allows to obtain a JSON file from a collection in MongoDB.
+    """
     data = ""
     db = dbClient()          
     training_data = db.training_data
-    cursor = training_data.find({}, { "_id": 0, "label": 1 , "text": 1 }).limit(10)
+    cursor = training_data.find({}, { "_id": 0, "label": 1 , "text": 1 })
     for td in cursor:
         data = data + json.dumps(td, sort_keys=True, indent=4, separators=(',', ': ')) + ", \n"
         
@@ -51,27 +95,6 @@ def trainingData():
     document = open("training.json", 'a')   
     document.write(data)
     document.close  
-        
-        
-
-def addSomeLabel(path, file_name, label):
-    """
-    This function allows to add a tag in order to labeling a training set.
-    Return tagged data set for training process
-    """
-    t0 = time.clock()
-    train = []
-    print "Add '", label,"' label to", file_name, "please wait..."
-    for line in open(path + file_name):
-        query = line.strip(' \t\r\n')
-        tag = label
-        data = []
-        data.append(query)
-        data.append(tag)
-        train.append(tuple(data))
-    #print train[:10]
-    print "Labeled done on", time.clock() - t0, "seconds."
-    return train
     
 
 def posTagging(phrase):
@@ -83,7 +106,7 @@ def posTagging(phrase):
     for pt in postg:
         p.append(str(pt[1]).strip(' \t\r\n'))
     return p
-    
+
 
 def posTaggingFromDocument(train, file_name):
     """
@@ -109,22 +132,49 @@ def posTaggingFromDocument(train, file_name):
     
 
 def nGram(n, phrase):
+    """
+    This function perform a n-gram process
+    """
     t = TextBlob(phrase)
     return t.ngrams(n=n)
-    
 
-def renderTrainData(path, positives, negatives):
+
+def saveTrainedClassifier(path, classifier, classifier_name):
     """
-    render train data (Positives + Negavites)
+    This function allows to save the trained classifier like a file.pickle
     """
-    pos = []
-    neg = []
+    f = open(classifier_name, 'wb')
+    pickle.dump(classifier, f)
+    f.close()
     
-    pos = addSomeLabel(path, positives, 'pos')
-    neg = addSomeLabel(path, negatives, 'neg')
     
-    return pos + neg
-        
+def loadTrainedClassifier(classifier_name):
+    """
+    This function allows to load a trained classifier.
+    Return: loaded classifier
+    """
+    f = open(classifier_name)
+    loaded_cl = pickle.load(f)
+    f.close()
+    return loaded_cl
+    
+    
+def test(classifier, query):
+    q = posTagging(query)
+    q = " ".join(q)
+    print "POS Tags: ", q       
+    tgram = nGram(3, q)  
+    t = ""
+    for tg in tgram:
+        d = '-'.join(tg)
+        t = t + " " + d
+    
+    print "TriGram: ", t
+    
+    prob_dist = classifier.prob_classify(t)
+    print "Max Probability Distribution:", prob_dist.max()
+    print "Pos:", prob_dist.prob("pos")
+    print "Neg:", prob_dist.prob("neg")
     
     
     

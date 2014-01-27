@@ -74,27 +74,6 @@ def accuracy(train, test):
     return cl
 
 
-def posTaggingCollection(train_file):
-    """    
-    This function performs a Part-of-speech taggin out from a collection of documents.
-    """
-    postags_train = []
-    for trf in train_file:        
-        #print trf[0]
-        data = []
-        t = TextBlob(trf[0])
-        postg = t.tags
-        p = ''
-        for pt in postg:
-            p+= str(pt[1]) + " "
-        #print p
-        data.append(p)
-        data.append(trf[1])
-        postags_train.append(tuple(data))
-    #print postags_train
-    return postags_train
-
-
 def posTaggingDocument(sentence):
     """
     This function performs a Part-of-speech taggin per sentence (document).
