@@ -44,7 +44,7 @@ def createTrainingData():
         t = ""
         
     negative_training_sample = db.negative_training_sample
-    cursor = negative_training_sample.find().limit(50)
+    cursor = negative_training_sample.find().limit(100)
     t = ""
     for td in cursor:
         tgram = td["triGram"]
@@ -62,12 +62,8 @@ def createTrainingData():
     
     cl = NaiveBayesClassifier(data)
     cl.show_informative_features(20)    
-    test = cl.classify("buying groceries online")
-    print test
-    test2 = cl.classify("how to get revenge on neighbor within limit of law")
-    print test2
     path = "/media/University/UniversityDisc/2-Master/MasterThesis/EjecucionTesis/Desarrollo/PythonProjects/QueryAnalyzer"
-    saveTrainedClassifier(path, cl, "my_classifier_v2.pickle")
+    saveTrainedClassifier(path, cl, "my_classifier_v3.pickle")
 
         
         #train.append((tgram, label))
