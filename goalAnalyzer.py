@@ -9,10 +9,9 @@ ranging from natural language processing to identify the user's intentions
 and goals
 """
 
+import time
 from textblob.classifiers import NaiveBayesClassifier
 from textblob import TextBlob
-
-import time
 import buildingTrainData as bltd
 
 import pickle
@@ -26,7 +25,7 @@ def accuracy(classifier):
     """
     t0 = time.clock()
     print "Loading Classifier, this may take several minutes, please wait..."
-    cl = bltd.loadTrainedClassifier(classifier)
+    cl = loadTrainedClassifier(classifier)
     print "Most predictive features: ", cl.show_informative_features(20)
     print  "\tClassifier loaded on", time.clock() - t0, "seconds."
     print 
@@ -35,7 +34,7 @@ def accuracy(classifier):
     print "Start data load, this may take several minutes, please wait..."
     db = bltd.dbClient()  
     aol_goals = db.aol_goals
-    cursor = aol_goals.find({}, {"triGram" : 1}) 
+    cursor = aol_goals.find({}, {"triGram" : 1}).limit(1000)
     test_data = []
     t = ""
     label = "pos" 
@@ -53,39 +52,44 @@ def accuracy(classifier):
     t0 = time.clock()
     print "Performing test, please wait..."
     print "Accuracy: ", cl.accuracy(test_data)    
-    print    
+    print "Test done on", time.clock() - t0, "seconds."   
 
 
-def posTaggingDocument(sentence):
-    """
-    This function performs a Part-of-speech taggin per sentence (document).
-    """
-    t = TextBlob(sentence)
-    p = ''
-    for pt in t.tags:
-        p+= str(pt[1]) + " "
-    return p
-    
-
-def test(query, classifier):
+def testQueries(classifier):
     """
     This function classifies the user query as appropriate: "Pos" or "Neg".
     """
-    p = posTaggingDocument(query)
-    classifier.classify(p)
-    prob_dist = classifier.prob_classify(p)
-    #print "Max Probability Distribution:", prob_dist.max()
-    #print "Pos:", prob_dist.prob("pos")
-    #print "Neg:", prob_dist.prob("neg")
-    return prob_dist.max(), prob_dist.prob("pos"), prob_dist.prob("neg")
+    db = bltd.dbClient()  
+    aol_goals = db.aol_goals
+    cursor = aol_goals.find()     
+    for td in cursor:
+        tgram = td["triGram"]       
+        query = td["query"]
+        t = ""
+        for tg in tgram:
+            d = '-'.join(tg)
+            t = t + " " + d
+    
+        print "Query: ", query                
+        prob_dist = classifier.prob_classify(t)
+        print "Max PD: ", prob_dist.max(), " - Pos", prob_dist.prob("pos"), " - Neg:", prob_dist.prob("neg")    
+        print
+
+
+def testQuery(classifier, query):
+    t = bltd.triGram(query)
+    prob_dist = classifier.prob_classify(t)
+    print "Max Probability Distribution:", prob_dist.max()
+    print "Pos:", prob_dist.prob("pos")
+    print "Neg:", prob_dist.prob("neg")
 
 
 def updateClassifier(query, classifier, label):
     """
     This feature allows updating the classifier based on new vocabulary (queries not seen in the training phase).
     """
-    post = posTaggingDocument(query)
-    new_data = [(post, label)]
+    tgram = bltd.triGram(query)
+    new_data = [(tgram , label)]
     classifier.update(new_data)
     
     

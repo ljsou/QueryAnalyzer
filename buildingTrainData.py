@@ -134,6 +134,19 @@ def nGram(n, phrase):
     t = TextBlob(phrase)
     return t.ngrams(n=n)
 
+def triGram(query):
+    q = posTagging(query)
+    q = " ".join(q)
+    print "POS Tags: ", q       
+    tgram = nGram(3, q)  
+    t = ""
+    for tg in tgram:
+        d = '-'.join(tg)
+        t = t + " " + d
+    
+    print "TriGram: ", t
+    return t
+
 
 def saveTrainedClassifier(path, classifier, classifier_name):
     """
@@ -155,22 +168,6 @@ def loadTrainedClassifier(classifier_name):
     return loaded_cl
     
     
-def test(classifier, query):
-    q = posTagging(query)
-    q = " ".join(q)
-    print "POS Tags: ", q       
-    tgram = nGram(3, q)  
-    t = ""
-    for tg in tgram:
-        d = '-'.join(tg)
-        t = t + " " + d
-    
-    print "TriGram: ", t
-    
-    prob_dist = classifier.prob_classify(t)
-    print "Max Probability Distribution:", prob_dist.max()
-    print "Pos:", prob_dist.prob("pos")
-    print "Neg:", prob_dist.prob("neg")
     
     
     
