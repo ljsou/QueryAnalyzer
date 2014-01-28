@@ -18,60 +18,42 @@ import buildingTrainData as bltd
 import pickle
 
 
-def init(): 
-    """
-    This function initializes the data sets of training and testing
     
-    test = [
-         ("how to cut hair", 'pos'),
-         ('w2express.com','neg'),
-         ('how to play cornhole', 'pos'),
-         ('safety ideas','neg'),
-         ("check your claim status", 'pos'),
-         ('buying rental cars','pos'),
-         ('canon','neg'),
-         ('changing your password','pos'),
-         ('park central hotel convention center','neg'),         
-         ('google','neg')
-    ]
-    """
-    test = [
-        
-        ('WRB TO VB NN ', 'pos'), 
-        ('CD ', 'neg'), 
-        ('WRB TO VB NN ', 'pos'), 
-        ('JJ NNS ', 'neg'), 
-        ('VB PRP$ NN NN ', 'pos'), 
-        ('VBG JJ NNS ', 'pos'), 
-        ('NN ', 'neg'), 
-        ('VBG PRP$ NN ', 'pos'), 
-        ('NN JJ NN NN NN ', 'neg'), 
-        ('NNP-ORG ', 'neg')
-    ]
-    path = '/media/University/UniversityDisc/2-Master/MasterThesis/EjecuciónTesis/Desarrollo/PythonProjects/Data/'
-    positives = 'positiveSample.txt'
-    negatives = 'negativeSample.txt'
-    
-    train = bltd.renderTrainData(path, positives, negatives)
-    
-    cl = accuracy(train, test)
-    return cl
-    
-    
-def accuracy(train, test):
+def accuracy(classifier):
     """
     This function evaluates the accuracy of the implemented classifier 
     Return the trained classifier 
     """
     t0 = time.clock()
-    print "Start trining of NaiveBayesClassifier, this may take several minutes, please wait..."
-    cl = NaiveBayesClassifier(train)
-    print  "\tTrainig done on", time.clock() - t0, "seconds."
+    print "Loading Classifier, this may take several minutes, please wait..."
+    cl = bltd.loadTrainedClassifier(classifier)
+    print "Most predictive features: ", cl.show_informative_features(20)
+    print  "\tClassifier loaded on", time.clock() - t0, "seconds."
     print 
-    print "\tAccuracy: ", cl.accuracy(test)
-    cl.show_informative_features(20)
-    print
-    return cl
+    
+    t0 = time.clock()
+    print "Start data load, this may take several minutes, please wait..."
+    db = bltd.dbClient()  
+    aol_goals = db.aol_goals
+    cursor = aol_goals.find({}, {"triGram" : 1}) 
+    test_data = []
+    t = ""
+    label = "pos" 
+    for td in cursor:
+        tgram = td["triGram"]        
+        #print tgram
+        for tg in tgram:
+            d = '-'.join(tg)
+            t = t + " " + d
+        test_data.append((t, label))
+        t = ""
+    print "Test data loaded on", time.clock() - t0, "seconds."   
+    #print test_data  
+    print 
+    t0 = time.clock()
+    print "Performing test, please wait..."
+    print "Accuracy: ", cl.accuracy(test_data)    
+    print    
 
 
 def posTaggingDocument(sentence):
