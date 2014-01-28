@@ -10,10 +10,7 @@ and goals
 """
 
 import time
-from textblob.classifiers import NaiveBayesClassifier
-from textblob import TextBlob
 import buildingTrainData as bltd
-
 import pickle
 
 
@@ -34,7 +31,7 @@ def accuracy(classifier):
     print "Start data load, this may take several minutes, please wait..."
     db = bltd.dbClient()  
     aol_goals = db.aol_goals
-    cursor = aol_goals.find({}, {"triGram" : 1}).limit(1000)
+    cursor = aol_goals.find({}, {"triGram" : 1}).limit(100)
     test_data = []
     t = ""
     label = "pos" 
