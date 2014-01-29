@@ -31,7 +31,7 @@ def accuracy(classifier):
     print "Start data load, this may take several minutes, please wait..."
     db = bltd.dbClient()  
     aol_goals = db.aol_goals
-    cursor = aol_goals.find({}, {"triGram" : 1}).limit(100)
+    cursor = aol_goals.find({}, {"triGram" : 1})
     test_data = []
     t = ""
     label = "pos" 
@@ -56,22 +56,35 @@ def testQueries(classifier):
     """
     This function classifies the user query as appropriate: "Pos" or "Neg".
     """
+    t0 = time.clock()
+    print "Start testing, this may take several minutes, please wait..."
     db = bltd.dbClient()  
     aol_goals = db.aol_goals
     cursor = aol_goals.find()     
-    for td in cursor:
-        tgram = td["triGram"]       
-        query = td["query"]
+    for c in cursor:
+        ID = c["_id"]
+        query = c["query"]   
+        pos = c["pos"]   
+        tgram = c["triGram"]
         t = ""
         for tg in tgram:
             d = '-'.join(tg)
             t = t + " " + d
-    
-        print "Query: ", query                
-        prob_dist = classifier.prob_classify(t)
-        print "Max PD: ", prob_dist.max(), " - Pos", prob_dist.prob("pos"), " - Neg:", prob_dist.prob("neg")    
-        print
 
+        prob_dist = classifier.prob_classify(t)
+        label = classifier.classify(t)
+
+        goal = {"ID" : str(ID),
+                "query": str(query),
+                "post" : pos, 
+                "label" : str(label),
+                "prob_dist_pos" : prob_dist.prob("pos"),
+                "prob_dist_neg" : prob_dist.prob("neg")
+        }    
+        
+        accuracy_test = db.accuracy_test
+        accuracy_test.insert(goal)
+    print "Test done on", time.clock() - t0, "seconds."   
 
 def testQuery(classifier, query):
     t = bltd.triGram(query)
