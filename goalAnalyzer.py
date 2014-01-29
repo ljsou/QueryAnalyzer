@@ -13,7 +13,6 @@ import time
 import buildingTrainData as bltd
 import pickle
 
-
     
 def accuracy(classifier):
     """

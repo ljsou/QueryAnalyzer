@@ -5,6 +5,7 @@ Created on Mon Dec  2 18:10:12 2013
 @author: Javier Suarez
 """
 from textblob import TextBlob
+import nltk
 #from textblob.taggers import NLTKTagger
 from textblob.classifiers import NaiveBayesClassifier
 from pymongo import MongoClient
@@ -92,6 +93,13 @@ def trainingData():
     document.write(data)
     document.close  
     
+def posTaggerNLTK(sentence):
+    tokens = nltk.word_tokenize(sentence)
+    tagged = nltk.pos_tag(tokens)
+    p = []
+    for pt in tagged:
+        p.append(str(pt[1]).strip(' \t\r\n'))
+    return p
 
 def posTagging(phrase):
     #nltk_tagger = NLTKTagger()
