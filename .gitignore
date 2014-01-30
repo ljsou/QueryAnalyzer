@@ -2,4 +2,8 @@
 *.pyo
 *.pickle
 .fuse_hidden0000023c00000001
+*.txt
+*.dict
+*.mm
+*.mm.index
 

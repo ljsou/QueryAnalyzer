@@ -145,6 +145,7 @@ def nGram(n, phrase):
 def triGram(query):
     q = posTagging(query)
     q = " ".join(q)
+    q = "S " + q + " E"
     print "POS Tags: ", q       
     tgram = nGram(3, q)  
     t = ""

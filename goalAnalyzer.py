@@ -86,7 +86,7 @@ def testQueries(classifier):
     print "Test done on", time.clock() - t0, "seconds."   
 
 def testQuery(classifier, query):
-    t = bltd.triGram(query)
+    t = bltd.triGram(query)    
     prob_dist = classifier.prob_classify(t)
     print "Max Probability Distribution:", prob_dist.max()
     print "Pos:", prob_dist.prob("pos")
