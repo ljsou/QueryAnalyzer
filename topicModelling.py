@@ -31,8 +31,8 @@ class MyCorpus(object):
 
 corpus = MyCorpus() # doesn't load the corpus into memory!
 print corpus
-#for vector in corpus_memory_friendly: # load one vector into memory at a time
-#    print vector
+# for vector in corpus_memory_friendly: # load one vector into memory at a time
+# print vector
 
 corpora.MmCorpus.serialize('corpus.mm', corpus)
 print corpus

@@ -6,4 +6,5 @@
 *.dict
 *.mm
 *.mm.index
-
+*.lsi
+*.lsi.npy
