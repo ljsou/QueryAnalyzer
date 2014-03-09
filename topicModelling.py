@@ -35,6 +35,6 @@ print corpus
 # print vector
 
 corpora.MmCorpus.serialize('corpus.mm', corpus)
-print corpus
+
 
 
