@@ -4,8 +4,10 @@ Created on Sat Mar  8 12:02:13 2014
 
 @author: javier
 """
-#import logging
+import logging
 #logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+logger = logging.getLogger()
+logger.disabled = False
 
 from gensim import corpora, models, similarities
 from itertools import chain
