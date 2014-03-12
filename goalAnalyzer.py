@@ -8,11 +8,11 @@ This script analyzes a user query through different levels of abstraction,
 ranging from natural language processing to identify the user's intentions 
 and goals
 """
-
-import time
+from matplotlib import pyplot
+import matplotlib as mpl
 import buildingTrainData as bltd
 import pickle
-
+import time
     
 def accuracy(classifier):
     """
@@ -88,9 +88,13 @@ def testQueries(classifier):
 def testQuery(classifier, query):
     t = bltd.triGram(query)    
     prob_dist = classifier.prob_classify(t)
+    print    
     print "Max Probability Distribution:", prob_dist.max()
     print "Pos:", prob_dist.prob("pos")
     print "Neg:", prob_dist.prob("neg")
+    print
+    print
+    return prob_dist.prob(str(prob_dist.max())), prob_dist.max()
 
 
 def updateClassifier(query, classifier, label):
@@ -117,6 +121,57 @@ def loadTrainedClassifier(classifier_name):
     loaded_cl = pickle.load(f)
     f.close()
     return loaded_cl
+    
+def viewProbabilityDistribution(prob_dist_max, tag):
+    if(tag.strip(' \t\r\n') == 'pos'):
+        b = round(prob_dist_max,2)
+    else: 
+        b = 1 - round(prob_dist_max,2)
+        
+    # Make a figure and axes with dimensions as desired.
+    fig = pyplot.figure(figsize=(8,3))
+    ax1 = fig.add_axes([0.09, 0.80, 0.82, 0.15])
+    ax2 = fig.add_axes([0.05, 0.475, 0.9, 0.15])
+    
+    # Set the colormap and norm to correspond to the data for which
+    # the colorbar will be used.
+    cmap = mpl.cm.cool
+    norm = mpl.colors.Normalize(vmin=0, vmax=1)
+    
+    # ColorbarBase derives from ScalarMappable and puts a colorbar
+    # in a specified axes, so it has everything needed for a
+    # standalone colorbar.  There are many more kwargs, but the
+    # following gives a basic continuous colorbar with ticks
+    # and labels.
+    cb1 = mpl.colorbar.ColorbarBase(ax1, cmap=cmap,
+                                    norm=norm,
+                                    orientation='horizontal')
+    space = "                                                                                                                                             "
+    cb1.set_label('No ' + space + ' Yes')
+    
+    # The second example illustrates the use of a ListedColormap, a
+    # BoundaryNorm, and extended ends to show the "over" and "under"
+    # value colors.
+    cmap = mpl.colors.ListedColormap(['gray', 'w'])
+    cmap.set_over('0.25')
+    cmap.set_under('0.75')
+    
+    # If a ListedColormap is used, the length of the bounds array must be
+    # one greater than the length of the color list.  The bounds must be
+    # monotonically increasing.
+    bounds = [0, b, 1]
+    norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+    cb2 = mpl.colorbar.ColorbarBase(ax2, cmap=cmap,
+                                         norm=norm,
+                                         # to use 'extend', you must
+                                         # specify two extra boundaries:
+                                         #boundaries=[0]+bounds+[13],
+                                         extend='both',
+                                         ticks=bounds, # optional
+                                         spacing='proportional',
+                                         orientation='horizontal')
+    cb2.set_label('Degree of Intentional Explicitness of an  Query')
+
 
 #The following commands allow to observe the operation of this script.
 """    
