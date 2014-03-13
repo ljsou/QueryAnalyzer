@@ -10,7 +10,7 @@ and goals
 """
 from matplotlib import pyplot
 import matplotlib as mpl
-import buildingTrainData as bltd
+import building_train_data as bltd
 import pickle
 import time
     
