@@ -47,7 +47,7 @@ def initLDA (model_path, dictionary_name, corpus_name, ntopics):
     #print corpus
     #print dictionary.token2id    
 
-    lda = models.ldamodel.LdaModel(corpus, num_topics=ntopics, id2word=dictionary)
+    lda = models.ldamodel.LdaModel(corpus=corpus, id2word=dictionary, num_topics=ntopics, update_every=1, chunksize=1000, passes=1)
     lda.save(model_path + 'model.lda') # same for tfidf, lsi, ...  
     topics = lda.show_topics(topics=10, topn=3, log=False, formatted=False)
     i = 0
@@ -146,7 +146,7 @@ def viewPerQueryGoalProportions(goals_distribution):
         #print proportion
     #print goals
 
-    width = 0.5 # gives histogram aspect to the bar diagram
+    width = 0.4 # gives histogram aspect to the bar diagram
     pos = np.arange(len(goals))
 
     ax = plt.axes()

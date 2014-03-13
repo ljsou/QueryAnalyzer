@@ -100,7 +100,7 @@ class NPExtractor(object):
         matches = []
         for t in tags:
             #if t[1] == "NNP" or t[1] == "NNI":
-            if t[1] == "NNP" or t[1] == "NNI" or t[1] == "NN" or t[1] == "VB":
+            if t[1] == "NNP" or t[1] == "NNI" or t[1] == "NN" or t[1] == "VB"  or t[1] == "VBP"  or t[1] == "WRB":
                 matches.append(t[0])
         return matches
  
@@ -110,10 +110,9 @@ def extract(query):
  
     sentence = query
     np_extractor = NPExtractor(sentence)
-    v,np,ns = np_extractor.extract()
     result = np_extractor.extract()
     print "This sentence is about: %s" % ", ".join(result)
-    return v, np, ns
+    return result
  
 if __name__ == '__main__':
     extract("buy a car at Popayán")

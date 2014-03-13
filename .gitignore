@@ -8,3 +8,7 @@
 *.mm.index
 *.lsi
 *.lsi.npy
+*.lda
+*.vocab
+*.lda-c
+*.index
