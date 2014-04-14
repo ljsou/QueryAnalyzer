@@ -61,7 +61,7 @@ def viewTopics(model, topics, topn):
     topics = model.show_topics(topics, topn, log=False, formatted=False)
     i = 0
     for tp in topics:
-        print "TOPIC #", i, ": ", tp
+        print "GOAL #", i, ": ", tp
         i=i+1
     
 
@@ -90,7 +90,7 @@ def perQueryGoalProportions(query, dictionary, lda):
     print    
     print "Per-query goal proportions (on", time.clock() - t0, "seconds):" 
     goal_proportion = lda[vec_bow]
-    print "\t", goal_proportion
+    print goal_proportion
     print 
     print
     return goal_proportion
@@ -139,12 +139,19 @@ def perQueryGoalProportions_2(query, dictionary, lda):
 def viewPerQueryGoalProportions(goals_distribution):
     proportion = []
     goals = []
+    maximo = 0
+    max_goal = 0
     for g in goals_distribution:
         proportion.append(abs(g[1]))
         goals.append(g[0])
+        #print g[1]
+        if abs(g[1]) > maximo:
+            maximo = abs(g[1])
+            #print g[1]
+            max_goal = g[0]
+       
         
-        #print proportion
-    #print goals
+    print "MAX ", max_goal
 
     width = 0.5 # gives histogram aspect to the bar diagram
     pos = np.arange(len(goals))
@@ -159,6 +166,7 @@ def viewPerQueryGoalProportions(goals_distribution):
     plt.show()
     print
     print
+    return max_goal
     
 
     
