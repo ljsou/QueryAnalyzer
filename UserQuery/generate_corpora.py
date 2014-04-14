@@ -96,7 +96,7 @@ def MyNewCorpus(query):
     # collect statistics about all tokens   
     dictionary = corpora.Dictionary(goal.lower().split() for goal in goals)
     stopwords = set(nltk.corpus.stopwords.words('english'))
-    stopwords.update(['fuck', 'wife', 'fucking', 'rid', 'porn', 'sex', 'myspace', 'anal', 'penis', 'cum', '500'])
+    stopwords.update(['fuck', 'wife', 'fucking', 'rid', 'porn', 'sex', 'myspace', 'anal', 'penis', 'cum', '500', 'nj', 'va', 'tulsa'])
     stopwords.remove("do")
     stopwords.remove('from')
     stopwords.remove('being')
