@@ -86,11 +86,11 @@ def perQueryGoalProportions(query, dictionary, lda):
     t0 = time.clock()
     #print dictionary.token2id
     vec_bow = dictionary.doc2bow(query.lower().split())
-    print "vec_bow: \t",  vec_bow    
-    print    
+    #print "vec_bow: \t",  vec_bow    
+    #print    
     print "Per-query goal proportions (on", time.clock() - t0, "seconds):" 
     goal_proportion = lda[vec_bow]
-    print goal_proportion
+    #print goal_proportion
     print 
     print
     return goal_proportion

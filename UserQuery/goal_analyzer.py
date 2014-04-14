@@ -122,6 +122,7 @@ def loadTrainedClassifier(classifier_name):
     f.close()
     return loaded_cl
     
+    
 def viewProbabilityDistribution(prob_dist_max, tag):
     if(tag.strip(' \t\r\n') == 'pos'):
         b = 1 - round(prob_dist_max,2)
@@ -171,31 +172,6 @@ def viewProbabilityDistribution(prob_dist_max, tag):
                                          spacing='proportional',
                                          orientation='horizontal')
     cb2.set_label('Degree of Intentional Explicitness of an  Query')
-
-
-#The following commands allow to observe the operation of this script.
-"""    
->>> import goalAnalyzer as ga
->>> train, test = ga.init()
->>> train = ga.posTaggingCollection(train)
->>> test = ga.posTaggingCollection(test)
->>> cl = ga.accuracy(train, test)
->>> query = 'where to find info on aquarium in atlanta ga' #Example
->>> label = ga.test(query, cl)
->>> updateClassifier(query, cl, label)
->>> cl.accuracy(test)    
->>> 
->>>
->>> import pickle
->>> f = open('my_classifier.pickle', 'wb')
->>> pickle.dump(cl, f)
->>> f.close()
->>> 
->>>
->>> f = open('my_classifier.pickle')
->>> classifier = pickle.load(f)
->>> f.close()
-""" 
 
 
     

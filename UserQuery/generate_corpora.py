@@ -77,27 +77,26 @@ def MyNewCorpus(query):
     if noun == empty:
         noun.append(query)
         
-    print "noun", noun
+    #print "noun", noun
     size  = len(noun)   
     #print size    
     goals = []
     #ln = [line.lower().split() for line in open(data_path + data_file)]
-    if (size > 0):
-        
+    if (size > 0):        
         for i in range(0, size):    
             word = " " + noun[i] + " "
-            print "--Word:", word            
+            #print "--Word:", word            
             for line in open(data_path + data_file):
                 if word in line: 
                     goals.append(line.strip(' \t\r\n'))
-            print"-->", len(goals)
+            #print"-->", len(goals)
     #print goals
     #print len(goals)
            
     # collect statistics about all tokens   
     dictionary = corpora.Dictionary(goal.lower().split() for goal in goals)
     stopwords = set(nltk.corpus.stopwords.words('english'))
-    stopwords.update(['fuck', 'wife', 'fucking', 'rid', 'porn', 'sex', 'myspace', 'anal', 'penis', 'cum'])
+    stopwords.update(['fuck', 'wife', 'fucking', 'rid', 'porn', 'sex', 'myspace', 'anal', 'penis', 'cum', '500'])
     stopwords.remove("do")
     stopwords.remove('from')
     stopwords.remove('being')
