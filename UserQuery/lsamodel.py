@@ -82,9 +82,18 @@ def perQueryGoalProportions(query, dictionary, tfidf, lsa):
 def viewPerQueryGoalProportions(goals_distribution):
     proportion = []
     goals = []
+    maximo = 0
+    max_goal = 0
     for g in goals_distribution:
         proportion.append(abs(g[1]))
         goals.append(g[0])
+        if abs(g[1]) > maximo:
+            maximo = abs(g[1])
+            #print g[1]
+            max_goal = g[0]
+       
+        
+    print "MAX:", max_goal
         
     #print proportion
     #print goals
@@ -102,6 +111,7 @@ def viewPerQueryGoalProportions(goals_distribution):
     plt.show()
     print
     print
+    return max_goal
     
 
     
