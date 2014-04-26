@@ -100,7 +100,7 @@ def viewPerQueryGoalProportions(goals_distribution):
 
     width = 0.5 # gives histogram aspect to the bar diagram
     pos = np.arange(len(goals))
-
+    plt.figure(figsize=(16, 5))
     ax = plt.axes()
     ax.set_xticks(pos + (width / 2))
     ax.set_xticklabels(goals)

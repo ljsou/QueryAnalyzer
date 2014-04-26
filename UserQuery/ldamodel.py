@@ -82,13 +82,11 @@ def viewPerCorpusTopicDistribution(path, model_corpus):
         print i, " ", j.strip(' \t\r\n')
 
 
-def perQueryGoalProportions(query, dictionary, lda):
-    t0 = time.clock()
+def perQueryGoalProportions(query, dictionary, lda):    
     #print dictionary.token2id
     vec_bow = dictionary.doc2bow(query.lower().split())
     #print "vec_bow: \t",  vec_bow    
-    #print    
-    print "Per-query goal proportions (on", time.clock() - t0, "seconds):" 
+    #print "Per-query goal proportions (on", time.clock() - t0, "seconds):" 
     goal_proportion = lda[vec_bow]
     #print goal_proportion
     print 
@@ -163,10 +161,56 @@ def viewPerQueryGoalProportions(goals_distribution):
     plt.bar(pos, proportion, width, color='r')
     plt.ylabel('Goals distribution for query')
     plt.xlabel('Goals')
-    plt.show()
-    print
-    print
+    plt.show()    
     return max_goal
+
+def viewQueryGoalProportions(distribution_1, distribution_2):
+    
+    proportion_1, goals_1, max_goal_1 = infoDistribution(distribution_1)
+    proportion_2, goals_2, max_goal_2 = infoDistribution(distribution_2)
+
+    width = 0.5 # gives histogram aspect to the bar diagram
+
+    plt.figure(figsize=(16, 5))
+    ax1 = plt.subplot2grid((1, 2), (0, 0))
+    #plt.subplot(1,2,1)
+    #ax = plt.axes()
+    #ax.set_xticks(pos_1 + (width / 2))
+    #ax.set_xticklabels(goals_1)
+    ax1.bar(goals_1, proportion_1, width, color='r')
+    plt.ylabel('Goals distribution for query')
+    plt.xlabel('Goals Distribution 1')   
+    plt.grid(True)  
+    
+    ax2= plt.subplot2grid((1, 2), (0, 1))
+    ax2.bar(goals_2, proportion_2, width, color='blue')
+    plt.ylabel('Goals distribution for query')
+    plt.xlabel('Goals Distribution 2')        
+    
+    plt.grid(True)    
+    plt.show()
+    
+    max_goals = []
+    max_goals.append(max_goal_1)
+    max_goals.append(max_goal_2)
+
+    return max_goals
+    
+def infoDistribution(distribution):    
+    proportion = []
+    goals = []
+    maximo = 0
+    max_goal = 0
+    for g in distribution:        
+        proportion.append(abs(g[1]))
+        goals.append(g[0])
+        #print g[1]
+        if abs(g[1]) > maximo:
+            maximo = abs(g[1])
+            #print g[1]
+            max_goal = g[0]
+       
+    return proportion, goals, max_goal
     
 
     
