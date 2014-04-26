@@ -60,6 +60,7 @@ class MyCorpus(object):
         print  "\tDictionary created on", time.clock() - t0, "seconds."
         print "\t",dictionary        
         
+
 def MyNewCorpus(query):
     
     t0 = time.clock()
@@ -77,7 +78,7 @@ def MyNewCorpus(query):
     if noun == empty:
         noun.append(query)
         
-    #print "noun", noun
+    print "noun", noun
     size  = len(noun)   
     #print size    
     goals = []
@@ -124,7 +125,8 @@ def MyNewCorpus(query):
     
     print  "\tDictionary created on", time.clock() - t0, "seconds."
     print "\t",dictionary      
-    
+
+
 def getCorpus(query):
     corpus = MyNewCorpus(query)
     model_path = "/tmp/"
@@ -137,17 +139,6 @@ def getCorpus(query):
     
     return dictionary, corpus
     
-def getCorpus2(query):
-    corpus = MyNewCorpus(query)
-    model_path = "/tmp/"
-    corpus_name = "corpus_2.mm"         
-    dictionary_name = "dictionary.dict"
-    corpora.MmCorpus.serialize(model_path + corpus_name, corpus)
-    
-    dictionary = corpora.Dictionary.load(model_path + dictionary_name)
-    corpus = corpora.MmCorpus(model_path + corpus_name)
-    
-    return dictionary, corpus
 #corpus = MyNewCorpus("Car")
 #corpus = MyCorpus() # doesn't load the corpus into memory!
 #corpus.__iter__()

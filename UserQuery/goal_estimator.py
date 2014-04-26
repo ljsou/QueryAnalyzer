@@ -22,9 +22,8 @@ from os import path
 import wordcloud
 import time
 
-def analizer(query, num_topics, dictionary, corpus, alpha, num_goals):
+def analizer(query, num_topics, dictionary, corpus, alpha):
 
-    num_topics = num_goals;
     #num_words = 4;        
     
     alpha=alpha
@@ -73,11 +72,11 @@ def draw_goal(lda_model, topic):
     wordcloud.draw(elements, path.join(image_path + 'other_image.png'), width=100, height=100, scale=2)  
     
     
-def goals(query, num_topics, alpha, num_goals):
+def goals(query, num_topics, alpha):
     #query = "i want to buy a car"
     t0 = time.clock()
-    dictionary, corpus = genco.getCorpus2(query)
+    dictionary, corpus = genco.getCorpus(query)
     #print corpus    
-    image_path, lda_model = analizer(query, num_topics, dictionary, corpus, alpha, num_goals)
+    image_path, lda_model = analizer(query, num_topics, dictionary, corpus, alpha)
     print  "analysis completed in", time.clock() - t0, "seconds."
     return image_path, lda_model
