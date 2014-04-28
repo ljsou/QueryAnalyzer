@@ -136,14 +136,35 @@ def randomSampleFromMongo():
             positive_training_sample = db.positive_training_sample
             positive_training_sample.insert(goal)
             #negative_training_sample = db.negative_training_sample
-            #negative_training_sample.insert(goal)
-            i = 0
+            #negative_training_sample.insert(goal)            
      
     print "Random sample done on", time.clock() - t0, "seconds."
         
         
+def insertPerplexity(assessment):
+    t0 = time.clock()
+    db = dbClient()
+    for a in range(len(assessment)):   
     
-    
+       alpha = assessment['A'][a]   
+       topics = assessment['B'][a]  
+       perplex = assessment['C'][a] 
+       per_word_perplexity = assessment['D'][a] 
+       elapsed_time = assessment['E'][a]       
+       
+       values = {"alpha": alpha,
+                 "topics" : topics, 
+                 "perplex" : perplex, 
+                 "per_word_perplexity" : per_word_perplexity, 
+                 "elapsed_time" : elapsed_time
+       }   
+       #Inserting Documents (AOl_Goals)
+       lda_assessment = db.lda_assessment
+       lda_assessment.insert(values)
+       #negative_training_sample = db.negative_training_sample
+       #negative_training_sample.insert(goal)       
+     
+    print "lda_assessment done on", time.clock() - t0, "seconds."
     
     
     
