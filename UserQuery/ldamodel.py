@@ -88,7 +88,7 @@ def perQueryGoalProportions(query, dictionary, lda):
     #print "vec_bow: \t",  vec_bow    
     #print "Per-query goal proportions (on", time.clock() - t0, "seconds):" 
     goal_proportion = lda[vec_bow]
-    #print goal_proportion
+    print goal_proportion
     print 
     print
     return goal_proportion
@@ -153,12 +153,13 @@ def viewPerQueryGoalProportions(goals_distribution):
 
     width = 0.5 # gives histogram aspect to the bar diagram
     pos = np.arange(len(goals))
+    plt.figure(figsize=(12, 5))
 
     ax = plt.axes()
     ax.set_xticks(pos + (width / 2))
     ax.set_xticklabels(goals)
     
-    plt.bar(pos, proportion, width, color='r')
+    plt.bar(pos, proportion, width, color='b')
     plt.ylabel('Goals distribution for query')
     plt.xlabel('Goals')
     plt.show()    

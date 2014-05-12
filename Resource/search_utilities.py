@@ -10,6 +10,18 @@ import urllib
 import urllib2
 from sgmllib import SGMLParser
 from xgoogle.search import GoogleSearch, SearchError
+from textblob import TextBlob
+from pymongo import MongoClient
+
+
+def dbClient():      
+      #This function makes a Connection with MongoClient, i.e., \n",
+      #creates a MongoClient to the running mongod instance. \n",      
+      #Making a Connection with MongoClient\n",
+      client = MongoClient('localhost', 27017)
+      #Getting a Database
+      db = client['aolSearchDB']
+      return db      
 
 
 def getgoogleurl(search,siteurl=False):
@@ -61,23 +73,68 @@ def searchByQueryAndURL(query, url):
         print link
         l.append(link)
     return l
+    
+    
+def insertIntoDB(title, desc, url, tags):
+    db = dbClient()
+    values = {"title": title, 
+          "description" : desc,
+          "url" : url,
+          "tags" : str(tags)
+          }
+    resources = db.resources
+    resources.insert(values)
+
+def translate(phrase): 
+    phrase = phrase.replace("...", " ")
+    phrase = phrase.replace("-", " ")
+    phrase = phrase.replace("'", " ")
+    phrase = phrase.replace("_", " ")
+    phrase = phrase.replace(".net", " ")
+    phrase = phrase.replace(".asp", " ")
+    phrase = phrase.replace(".org", " ")
+    phrase = phrase.replace(".", " ")
+    phrase = phrase.replace("?", " ")
+    phrase = phrase.replace("¿", " ")
+    phrase = phrase.replace("!", " ")
+    phrase = phrase.replace(";", " ")
+    phrase = phrase.replace(":", " ")
+    phrase = phrase.replace(",", " ")
+    phrase = phrase.replace("|", " ")
+    phrase = phrase.replace("/", " ")
+    phrase = phrase.replace("(", " ")
+    phrase = phrase.replace(")", " ")
+    ph = TextBlob(phrase)        
+    p_translated = ph.translate(from_lang="es", to='en')
+    return p_translated.correct()
 
 
 def searchByXGoogle(query):
+    results = []
     try:
-        gs = GoogleSearch("quick and dirty")
-        gs.results_per_page = 50
+        gs = GoogleSearch(query)
+        gs.results_per_page = 100
         results = gs.get_results()
         for res in results:
-            print
-            print "Title: \t", res.title.encode('utf8')
-            print "Descr: \t", res.desc.encode('utf8')
-            print "URL: \t", res.url.encode('utf8')
-            print     
+            _title = res.title.encode("ascii", "ignore")  #.decode('utf-8')
+            _desc = res.desc.encode("ascii", "ignore")
+            _url = res.url.encode("ascii", "ignore")
+            tags_1 = translate(_title)            
+            tags_2 = translate(_desc)
+            tags  = tags_1 + " " + tags_2            
+            print "ORIGINAL:"
+            print "Title: \t", _title
+            print "Descr: \t", _desc
+            print "URL: \t", _url
+            print "Tags: \t", tags
+            print "-------------------------------------------------------"                      
+            insertIntoDB(_title, _desc, _url, tags)
             
     except SearchError, e:
          print "Search failed: %s" % e    
-
+         
+    return _title, _desc, _url, tags
+        
 
 def showSome(searchfor):
     query = urllib.urlencode({'q': searchfor})
@@ -139,3 +196,5 @@ class PullSuggestions(SGMLParser):
    def start_num_queries(self, attrs):
       for a in attrs:
          if a[0] == 'int': self.queries.append(a[1])
+
+

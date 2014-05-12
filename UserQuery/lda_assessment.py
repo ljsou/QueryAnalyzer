@@ -82,6 +82,7 @@ class LDA:
 
 
 def lda_learning(lda, iteration, voca):
+    perplexity = []
     pre_perp = lda.perplexity()
     print "initial perplexity=%f" % pre_perp
     for i in range(iteration):
@@ -90,11 +91,14 @@ def lda_learning(lda, iteration, voca):
         print "-%d p=%f" % (i + 1, perp)
         if pre_perp:
             if pre_perp < perp:
+                print "pre_perp < perp"
                 #output_word_topic_dist(lda, voca)
                 pre_perp = None
-            else:
+            else:                
                 pre_perp = perp
+        perplexity.append(pre_perp)
     #output_word_topic_dist(lda, voca)
+    return perplexity
 
 
 def output_word_topic_dist(lda, voca):
@@ -114,52 +118,23 @@ def output_word_topic_dist(lda, voca):
         for w in numpy.argsort(-phi[k])[:20]:
             print "%s: %f (%d)" % (voca[w], phi[k,w], wordcount[k].get(w,0))
 
-#@profile
-def main(alpha, iteration, k):
-    #import optparse
+def getVocabulary():
     import vocabulary
     import random
-    print "init LDA", alpha
-    data_path = "/media/University/UniversityDisc/2-Master/MasterThesis/EjecucionTesis/Desarrollo/PythonProjects/Data/"
-    model_path = "/media/University/UniversityDisc/2-Master/MasterThesis/EjecucionTesis/Desarrollo/PythonProjects/QueryAnalyzer/Models/"    
+    
+    data_path = "/media/University/UniversityDisc/2-Master/MasterThesis/EjecucionTesis/Desarrollo/PythonProjects/Data/"    
     filename = data_path + "aolGoals.txt"   
-    #parser = optparse.OptionParser()
-    #parser.add_option("-f", dest="filename", help="corpus filename", default=filename)
-    """
-    parser.add_option("-l", dest="corpus", help="using range of Brown corpus' files(start:end)")
-    parser.add_option("--alpha", dest="alpha", type="float", help="parameter alpha", default=0.5)
-    parser.add_option("--beta", dest="beta", type="float", help="parameter beta", default=0.5)
-    parser.add_option("-k", dest="K", type="int", help="number of topics", default=20)
-    parser.add_option("-i", dest="iteration", type="int", help="iteration count", default=3)
-    parser.add_option("-s", dest="smartinit", action="store_true", help="smart initialize of parameters", default=False)
-    parser.add_option("--stopwords", dest="stopwords", help="exclude stop words", action="store_true", default=False)
-    parser.add_option("--seed", dest="seed", type="int", help="random seed")
-    parser.add_option("--df", dest="df", type="int", help="threshold of document freaquency to cut words", default=0)
-    """
-    if(alpha==None):         
-        alpha=abs(1.0/k)
-        beta=abs(1.0/k)
-        print "=none:", alpha
-    else:
-        alpha=alpha
-        beta=alpha
-    K=k
-    iteration=iteration #100
-    smartinit=False
     stopwords=True
-    seed=None
     df=0
     
-    #(options, args) = parser.parse_args()    
+     #(options, args) = parser.parse_args()    
     if not (filename or corpus): "need corpus filename(-l) or corpus range(-l)"
 
     if filename:
         corpus = vocabulary.load_file(filename)
     else:
         corpus = vocabulary.load_corpus(corpus)
-        if not corpus: "corpus range(-l) forms 'start:end'"
-    if seed != None:
-        numpy.random.seed(seed)
+        if not corpus: "corpus range(-l) forms 'start:end'"  
     
     cp = list(corpus)
     random.seed(326719) 
@@ -176,19 +151,61 @@ def main(alpha, iteration, k):
     voca = vocabulary.Vocabulary(stopwords)
     docs = [voca.doc_to_ids(doc) for doc in cp_train]
     if df > 0: docs = voca.cut_low_freq(docs, df)
+    
+    return voca, docs, cp_train
 
+#@profile
+def main(alpha, iteration, k, voca, docs, cp_train):
+    #import optparse    
+    
+    print "init LDA", alpha
+    
+    #parser = optparse.OptionParser()
+    #parser.add_option("-f", dest="filename", help="corpus filename", default=filename)
+    """
+    parser.add_option("-l", dest="corpus", help="using range of Brown corpus' files(start:end)")
+    parser.add_option("--alpha", dest="alpha", type="float", help="parameter alpha", default=0.5)
+    parser.add_option("--beta", dest="beta", type="float", help="parameter beta", default=0.5)
+    parser.add_option("-k", dest="K", type="int", help="number of topics", default=20)
+    parser.add_option("-i", dest="iteration", type="int", help="iteration count", default=3)
+    parser.add_option("-s", dest="smartinit", action="store_true", help="smart initialize of parameters", default=False)
+    parser.add_option("--stopwords", dest="stopwords", help="exclude stop words", action="store_true", default=False)
+    parser.add_option("--seed", dest="seed", type="int", help="random seed")
+    parser.add_option("--df", dest="df", type="int", help="threshold of document freaquency to cut words", default=0)
+    """
+    if(alpha==None):         
+        alpha=abs(1.0/k)
+        #beta=abs(1.0/k)
+        print "=none:", alpha
+    else:
+        alpha=alpha
+        #beta=alpha
+    K=k
+    iteration=iteration #100
+    smartinit=False
+    
+    seed=None
+    
+   
+    if seed != None:
+        numpy.random.seed(seed)    
+    
+    v = len(voca.vocas)
+    beta=abs(200.0/v)    
+    
     lda = LDA(K, alpha, beta, docs, voca.size(), smartinit)
     print "corpus=%d, words=%d, K=%d, a=%f, b=%f" % (len(cp_train), len(voca.vocas), K, alpha, beta)
-    return lda, voca
 
     #import cProfile
     #cProfile.runctx('lda_learning(lda, options.iteration, voca)', globals(), locals(), 'lda.profile')
-    #lda_learning(lda, iteration, voca)
+    perplexity = lda_learning(lda, iteration, voca)
+    
+    return lda, perplexity
 
 if __name__ == "__main__":
 
     alpha = None
-    iteration = 3
+    iteration = 10      
     k = 150
     main(alpha, iteration, k)
 

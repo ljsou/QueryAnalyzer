@@ -63,8 +63,8 @@ def createTrainingData():
     
     cl = NaiveBayesClassifier(data)
     cl.show_informative_features(20)    
-    path = "/media/University/UniversityDisc/2-Master/MasterThesis/EjecucionTesis/Desarrollo/PythonProjects/QueryAnalyzer"
-    saveTrainedClassifier(path, cl, "my_classifier_v3.pickle")
+    path = "/media/University/UniversityDisc/2-Master/MasterThesis/EjecucionTesis/Desarrollo/PythonProjects/QueryAnalyzer/Models/"
+    saveTrainedClassifier(path, cl, "my_classifier_v4.pickle")
 
         
         #train.append((tgram, label))
@@ -146,15 +146,31 @@ def triGram(query):
     q = posTagging(query)
     q = " ".join(q)
     q = "S " + q + " E"
-    print "POS Tags: ", q       
+    #print "POS Tags: ", q       
     tgram = nGram(3, q)  
     t = ""
     for tg in tgram:
         d = '-'.join(tg)
         t = t + " " + d
     
-    print "TriGram: ", t
+    #print "TriGram: ", t
     return t
+
+def getVerb(query):
+    tokens = nltk.word_tokenize(query)
+    tagged = nltk.pos_tag(tokens)
+    result = ""
+    for i in range(len(tokens)):
+        x = tagged[i]
+        y = tokens[i]
+        print "X: %s   Y: %s" % (x,y)
+        if ('VB' == x):
+            #.strip(' \t\r\n')
+            #p.append((x,y))
+            result = y
+    #print result
+    return result
+
 
 
 def saveTrainedClassifier(path, classifier, classifier_name):

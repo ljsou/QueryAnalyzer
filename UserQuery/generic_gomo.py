@@ -74,11 +74,12 @@ def drawLdaDistributions(lda_1, lda_2, alpha, model_path):
     l_2 = [lda_2[c] for c in corpus]    
     
     plt.clf()
-    plt.hist([[len(t) for t in l_1], [len(t) for t in l_2]], np.arange(60))
-    plt.ylabel('Nr of Queries')
-    plt.xlabel('Nr of Goals')
-    plt.text(6, 15000, r'default alpha')
-    plt.text(35, 25000, 'alpha='+str(alpha))
+    plt.hist([[len(t) for t in l_1], [len(t) for t in l_2]], np.arange(15))
+    plt.ylabel('Nr de Consultas')
+    plt.xlabel('Nr de Objetivos')
+    plt.text(4, 20000, r'alpha por defecto (0.005)')
+    plt.text(1.5, 50000, 'alfa='+str(alpha))
+    plt.grid()
     plt.show()
             
     #print "LDA GOALS' TOPICS:"

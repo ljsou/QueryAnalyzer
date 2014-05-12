@@ -34,11 +34,14 @@ def hellinger3(p, q, n):
     return np.sqrt(np.sum((np.sqrt(p) - np.sqrt(q)) ** 2)) / _SQRT2
     
 def getDistribution(dist, n):
+    #print dist
     distribution = [0] * n
     #print buckets    
-    total = 0    
+    #total = 0    
     for d in dist:
-        total = total + d[1]        
-        distribution[d[0]-1] = d[1]    
+        #total = total + d[1]        
+        m = d[0]
+        #print m
+        distribution[m] = d[1]    
     return distribution
         

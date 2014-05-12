@@ -13,7 +13,9 @@ import matplotlib as mpl
 import building_train_data as bltd
 import pickle
 import time
-    
+import random
+from textblob import TextBlob
+
 def accuracy(classifier):
     """
     This function evaluates the accuracy of the implemented classifier 
@@ -29,12 +31,21 @@ def accuracy(classifier):
     t0 = time.clock()
     print "Start data load, this may take several minutes, please wait..."
     db = bltd.dbClient()  
-    aol_goals = db.aol_goals
-    cursor = aol_goals.find({}, {"triGram" : 1})
+    test = db.test
+    cursor = test.find({}, {"triGram" : 1})
+    
+    crs = list(cursor)    
+    random.shuffle(crs)
+    # split into 90% training and 10% test sets
+    p = int(len(crs) * .01)
+    cr_test = crs[0:p]        
+        
+    print "Test", len(cr_test)
+    
     test_data = []
     t = ""
     label = "pos" 
-    for td in cursor:
+    for td in cr_test:
         tgram = td["triGram"]        
         #print tgram
         for tg in tgram:
@@ -86,7 +97,8 @@ def testQueries(classifier):
     print "Test done on", time.clock() - t0, "seconds."   
 
 def testQuery(classifier, query):
-    t = bltd.triGram(query)    
+    t = bltd.triGram(query) 
+    classifier.show_informative_features(40)
     prob_dist = classifier.prob_classify(t)
     print    
     print "Max Probability Distribution:", prob_dist.max()
@@ -172,6 +184,3 @@ def viewProbabilityDistribution(prob_dist_max, tag):
                                          spacing='proportional',
                                          orientation='horizontal')
     cb2.set_label('Degree of Intentional Explicitness of an  Query')
-
-
-    

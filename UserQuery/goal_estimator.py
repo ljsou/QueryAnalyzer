@@ -13,7 +13,7 @@ import logging
 logger = logging.getLogger()
 logger.disabled = False
 
-from gensim import models
+from gensim import models, corpora
 import generate_corpora as genco
 import ldamodel as ldam
 import matplotlib.pyplot as plt
@@ -21,27 +21,37 @@ import numpy as np
 from os import path
 import wordcloud
 import time
+import pickle
 
-def analizer(query, num_topics, dictionary, corpus, alpha):
 
-    #num_words = 4;        
+def saveTrainedClassifier(path, classifier, classifier_name):
+    f = open(path + classifier_name, 'wb')
+    pickle.dump(classifier, f)
+    f.close()
     
+
+def loadTrainedClassifier(path, classifier_name):
+    """
+    This function allows to load a trained classifier.
+    Return: loaded classifier
+    """
+    f = open(path + classifier_name)
+    loaded_cl = pickle.load(f)
+    f.close()
+    return loaded_cl
+    
+
+def analizer(query, num_topics, dictionary, corpus, alpha):    
+    image_path = "/media/University/UniversityDisc/2-Master/MasterThesis/EjecucionTesis/Desarrollo/PythonProjects/QueryAnalyzer/Models/"
+    model_path = image_path
     alpha=alpha
     #lda = models.ldamodel.LdaModel(corpus, num_topics=num_topics, id2word=dictionary, update_every=1, chunksize=50, passes=1)
-    lda_2 = models.ldamodel.LdaModel(corpus, num_topics=num_topics, id2word=dictionary, alpha=alpha, update_every=1, chunksize=50, passes=1)
-    #lda_goals = [lda[c] for c in corpus]
-    #lda_goals_2 = [lda_2[c] for c in corpus]
-    """
-    plt.clf()
-    plt.hist([[len(t) for t in lda_goals], [len(t) for t in lda_goals_2]], np.arange(40))
-    plt.ylabel('Nr of Queries')
-    plt.xlabel('Nr of Goals')
-    plt.text(3, 50, r'default alpha')
-    plt.text(25, 40, 'alpha='+str(alpha))
-    plt.show()
-    """
-    #print "LDA GOALS' TOPICS:"
-    #ldam.viewTopics(lda, num_topics, num_words)
+    lda_2 = models.ldamodel.LdaModel(corpus, num_topics=num_topics, id2word=dictionary, alpha=alpha, update_every=1, chunksize=50, passes=1)    
+    
+    dictionary.save(model_path + "tmp_dictionary.dict")  
+    corpora.MmCorpus.serialize(model_path + "tmp_corpus.mm", corpus)
+    lda_2.save(model_path + 'tmp_model.lda') # same for tfidf, lsi, ...
+    
     
     goals_distribution = ldam.perQueryGoalProportions(query, dictionary, lda_2)
     max_goal = ldam.viewPerQueryGoalProportions(goals_distribution)
@@ -75,7 +85,7 @@ def draw_goal(lda_model, topic):
 def goals(query, num_topics, alpha):
     #query = "i want to buy a car"
     t0 = time.clock()
-    dictionary, corpus = genco.getCorpus(query)
+    dictionary, corpus = genco.getCorpus(query)    
     #print corpus    
     image_path, lda_model = analizer(query, num_topics, dictionary, corpus, alpha)
     print  "analysis completed in", time.clock() - t0, "seconds."

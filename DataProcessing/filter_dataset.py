@@ -20,6 +20,7 @@ WRB    Wh-adverb
 
 import time
 from pymongo import MongoClient
+import random
 
 
 def dbClient():
@@ -101,7 +102,119 @@ def randomSample(file_name, new_file, sample):
     print "Random sample from", file_name, "done on", time.clock() - t0, "seconds."
 
 
-def randomSampleFromMongo():
+def insertIntoMongo(cursor, db):     
+     for g in cursor:        
+        query = g["query"]   
+        post = g["post"]   
+        triGram = g["triGram"]     
+        label = g["label"]       
+        data = {"query": query,
+                 "post" : post, 
+                 "triGram" : triGram, 
+                 "label" : label
+                 }
+
+        training_dataset = db.training_dataset
+        training_dataset.insert(data)
+
+
+def createDataSetForTraining():
+    """ 
+    """
+    db = dbClient()
+    t0 = time.clock()  
+    #test_sample is just a proof. It will be change for a whole dataset
+    positive_training_sample_2 = db.positive_training_sample_2    
+    cursor_ps = positive_training_sample_2.find()
+    insertIntoMongo(cursor_ps, db)
+    
+    negative_training_sample_2 = db.negative_training_sample_2 
+    cursor_ng = negative_training_sample_2.find()
+    insertIntoMongo(cursor_ng, db)
+
+    print "Test sample done on", time.clock() - t0, "seconds."
+
+
+
+def subdivideTrainingDataset():
+    """ 
+    """
+    t0 = time.clock()
+    db = dbClient()
+    #test_sample is just a proof. It will be change for a whole dataset
+    training_dataset = db.training_dataset
+    #aol_quidder = db.aol_quidder
+    cursor = training_dataset.find()
+    
+    # shuffle corpus
+    crs = list(cursor)    
+    random.shuffle(crs)
+    # split into 90% training and 10% test sets
+
+    p = int(len(crs) * .9)
+    cr = crs[0:p]
+    q = int(len(cr) * .9)
+    cr_train = cr[0:q]
+    cr_dev_test = cr[q:]    
+    cr_test = crs[p:]
+    
+    print "Train", len(cr_train)
+    print "Test", len(cr_test)
+    print "Dev test", len(cr_dev_test)
+    
+    
+    for g in cr_train:        
+        query = g["query"]   
+        post = g["post"]   
+        triGram = g["triGram"]           
+        label = g["label"]    
+        data = {"query": query,
+                 "post" : post, 
+                 "triGram" : triGram, 
+                 "label" : label
+        }        
+        #Inserting Documents (training data)
+        training = db.training
+        training.insert(data)
+    
+    print "Training sample done on", time.clock() - t0, "seconds."
+    t0 = time.clock()
+    
+    for g in cr_dev_test:        
+        query = g["query"]   
+        post = g["post"]   
+        triGram = g["triGram"]  
+        label = g["label"]          
+        data = {"query": query,
+                 "post" : post, 
+                 "triGram" : triGram, 
+                 "label" : label
+        }
+        #Inserting Documents (training data)
+        dev_test = db.dev_test
+        dev_test.insert(data)
+    
+    print "Dev test sample done on", time.clock() - t0, "seconds."
+    t0 = time.clock()
+                            
+    for g in cr_test:        
+        query = g["query"]   
+        post = g["post"]   
+        triGram = g["triGram"]   
+        label = g["label"]         
+        data = {"query": query,
+                 "post" : post, 
+                 "triGram" : triGram, 
+                 "label" : label
+        }
+        #Inserting Documents (training data)
+        test = db.test
+        test.insert(data)
+    
+    print "Test sample done on", time.clock() - t0, "seconds."
+
+
+def trainingPositiveSample():
     """
     This function allow to take a random sample of a given dataset in MongoDB.  
     In turn, the sample obtained from the original dataset is stored in MongoDB. 
@@ -112,32 +225,60 @@ def randomSampleFromMongo():
     """
     t0 = time.clock()
     db = dbClient()
-    i = 0
     #test_sample is just a proof. It will be change for a whole dataset
-    aol_goals = db.aol_goals
-    #aol_quidder = db.aol_quidder
+    aol_goals = db.aol_goals    
     cursor = aol_goals.find({"pos" : {"$in":["VB", "VBG", "WRB", "WP"]}})
-    #cursor = aol_quidder.find({"pos" : {"$nin":["VB", "VBG", "WRB", "WP"]}})
-    print cursor.count()
+
+    print "Train", cursor.count()
+        
     #collection = []
+    for g in cursor:        
+        query = g["query"]   
+        post = g["pos"]   
+        triGram = g["triGram"]           
+        data = {"query": query,
+                 "post" : post, 
+                 "triGram" : triGram, 
+                 "label" : "pos"
+        }
+
+        #Inserting Documents (positive training data)
+        positive_training_sample_2 = db.positive_training_sample_2
+        positive_training_sample_2.insert(data)
+        
+    print "Random sample done on", time.clock() - t0, "seconds."
+
+
+def trainingNegativeSample():
+    """
+    This function allow to take a random sample of a given dataset in MongoDB.  
+    In turn, the sample obtained from the original dataset is stored in MongoDB. 
+    - For the negative_training_sample collection is necessary to use 
+      the $nin operator over aol_quidder collection.
+    """
+    t0 = time.clock()
+    db = dbClient()
+    i = 0   
+    aol_quidder = db.aol_quidder
+    cursor = aol_quidder.find({"pos" : {"$nin":["VB", "VBG", "WRB", "WP"]}})
+
+    print "Train", cursor.count()
+    
     for g in cursor:        
         query = g["query"]   
         pos = g["pos"]   
         triGram = g["triGram"]           
-        goal = {"query": query,
+        data = {"query": query,
                  "post" : pos, 
                  "triGram" : triGram, 
-                 "label" : "pos"
+                 "label" : "neg"
         }
         i += 1
-        if(i == 465):
-            print i
-            #Inserting Documents (AOl_Goals)
-            positive_training_sample = db.positive_training_sample
-            positive_training_sample.insert(goal)
-            #negative_training_sample = db.negative_training_sample
-            #negative_training_sample.insert(goal)            
-     
+        if(i == 184):
+            i = 0
+            negative_training_sample_2 = db.negative_training_sample_2
+            negative_training_sample_2.insert(data)            
+    
     print "Random sample done on", time.clock() - t0, "seconds."
         
         
